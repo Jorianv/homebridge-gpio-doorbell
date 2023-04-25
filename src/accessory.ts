@@ -111,9 +111,12 @@ export class GpioDoorbellAccessory implements AccessoryPlugin {
     if (buttonPushed) {
       if (this.debounceTimeout) {
         clearTimeout(this.debounceTimeout);
+        this.log.debug('debounceTimeout has been reset.');
+        debounceTimeout = null;
       }
 
       this.debounceTimeout = setTimeout(async () => {
+        this.log.debug('debounce time activated');
       // handle GPIO output
         if (this.config.enableOutput && !this.doorbellMute) {
           this.log.debug(`Setting GPIO pin ${this.config.outputGpioPin} to ${buttonPushed ? 'HIGH' : 'LOW'}`);
