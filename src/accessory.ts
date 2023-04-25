@@ -24,7 +24,7 @@ export class GpioDoorbellAccessory implements AccessoryPlugin {
 
   private readonly doorbellMuteKey = 'homebridge-gpio-doorbell.mute';
   private doorbellMute: boolean;
-  private debounceTimeout?: NodeJS.Timeout;
+  private debounceTimeout: NodeJS.Timeout | null = null;
   private debounceDelay: number;
 
   constructor(
@@ -99,6 +99,12 @@ export class GpioDoorbellAccessory implements AccessoryPlugin {
 
     if (this.config.negateInput) {
       buttonPushed = !buttonPushed;
+    }
+    
+    // handle GPIO output
+    if (this.config.enableOutput && !this.doorbellMute) {
+      this.log.debug(`Setting GPIO pin ${this.config.outputGpioPin} to ${buttonPushed ? 'HIGH' : 'LOW'}`);
+      GPIO.write(this.config.outputGpioPin, buttonPushed);
     }
 
     // Debounce logic
